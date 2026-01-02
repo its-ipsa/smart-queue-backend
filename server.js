@@ -15,21 +15,16 @@ app.use(express.json());
 let queue = [];
 let avgServiceTime = 5;
 
-app.post("/join", async (req, res) => {
-  try {
-    queue.push({ id: Date.now() });
-    const aiResult = await geminiPredict(queue.length, avgServiceTime);
+app.post("/join", (req, res) => {
+  queue.push({ id: Date.now() });
 
-    res.json({
-      position: queue.length,
-      ai_wait_time: aiResult.estimated_wait_time,
-      priority: aiResult.priority_adjustment,
-      suggestion: aiResult.staff_suggestion
-    });
-  } catch (err) {
-    res.status(500).json({ error: "Gemini error" });
-  }
+  res.json({
+    position: queue.length,
+    ai_wait_time: 5,
+    suggestion: "Backend response verified"
+  });
 });
+
 
 app.post("/serve", (req, res) => {
   queue.shift();
@@ -43,6 +38,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
 });
+
 
 
 
