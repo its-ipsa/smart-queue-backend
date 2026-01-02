@@ -6,19 +6,26 @@ export async function geminiPredict(queueLength, avgServiceTime) {
   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
   const prompt = `
-You are an AI-powered smart queue system.
+You are a smart queue system.
 
 Queue length: ${queueLength}
 Average service time: ${avgServiceTime} minutes.
 
-Respond ONLY in valid JSON:
+Return ONLY this JSON format and nothing else:
 {
-  "estimated_wait_time": number,
-  "priority_adjustment": string,
-  "staff_suggestion": string
+  "estimated_wait_time": 0,
+  "priority_adjustment": "",
+  "staff_suggestion": ""
 }
 `;
 
   const result = await model.generateContent(prompt);
-  return JSON.parse(result.response.text());
+  const text = result.response.text();
+
+  // SAFETY: extract JSON only
+  const jsonStart = text.indexOf("{");
+  const jsonEnd = text.lastIndexOf("}") + 1;
+
+  return JSON.parse(text.slice(jsonStart, jsonEnd));
 }
+
