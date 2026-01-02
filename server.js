@@ -5,6 +5,9 @@ import { geminiPredict } from "./gemini.js";
 
 dotenv.config();
 
+
+
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -35,7 +38,11 @@ app.post("/serve", (req, res) => {
 app.get("/", (req, res) => {
   res.send("Smart Queue Backend is running ✅");
 });
+const PORT = process.env.PORT || 5000;
 
-app.listen(5000, () =>
-  console.log("✅ Backend running on http://localhost:5000")
+app.listen(PORT, () => {
+  console.log(`Backend running on port ${PORT}`);
+});
+
 );
+
