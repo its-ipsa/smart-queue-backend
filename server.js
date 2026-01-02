@@ -12,17 +12,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-let queue = [];
-let avgServiceTime = 5;
+app.post("/join", async (req, res) => {
+  try {
+    queue.push({ id: Date.now() });
 
-app.post("/join", (req, res) => {
-  queue.push({ id: Date.now() });
+    const aiResult = await geminiPredict(queue.length, avgServiceTime);
 
-  res.json({
-    position: queue.length,
-    ai_wait_time: 5,
-    suggestion: "Backend response verified"
-  });
+    res.json({
+      position: queue.length,
+      ai_wait_time: aiResult.estimated_wait_time ?? 5,
+      suggestion: aiResult.staff_suggestion ?? "System running normally"
+    });
+
+  } catch (error) {
+    console.error("JOIN ERROR:", error.message);
+    res.json({
+      position: queue.length,
+      ai_wait_time: 5,
+      suggestion: "AI temporarily unavailable"
+    });
+  }
 });
 
 
@@ -38,6 +47,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Backend running on port ${PORT}`);
 });
+
 
 
 
